@@ -1,29 +1,22 @@
-// Start the app builder. It loads appsettings.json automatically.
+// Start the app builder
 var builder = WebApplication.CreateBuilder(args);
 
-// BINDING in one line:
-// GetSection("DatabaseSettings") -> go to that part of the JSON
-// Get<DatabaseSettings>()        -> create the box and fill it with those values
-var settings = builder.Configuration
-    .GetSection("DatabaseSettings")
-    .Get<DatabaseSettings>();
+// REGISTER both services in the DI container.
+// This tells ASP.NET Core: "you are allowed to create these classes for people who ask."
+// AddTransient = a new object each time it is requested (fine for light, stateless classes).
+builder.Services.AddTransient<NotificationService>();
+builder.Services.AddTransient<UserService>();
 
-// Get<T>() returns null if the section is missing (for example a typo in the name).
-// So we check first, to avoid a crash.
-if (settings == null)
-{
-    Console.WriteLine("DatabaseSettings section not found in appsettings.json");
-}
-else
-{
-    // Read the values from the object, not from string keys.
-    // The editor now shows autocomplete after "settings."
-    Console.WriteLine($"Database Name: {settings.DatabaseName}");
-    Console.WriteLine($"Server Name: {settings.ServerName}");
-    Console.WriteLine($"Port: {settings.Port}");
-    Console.WriteLine($"Encryption Enabled: {settings.EnableEncryption}");
-}
-
-// Finish the setup and start the server.
+// Finish the setup. After this line, no more services can be added.
 var app = builder.Build();
+
+// RESOLVE UserService from the container (ask the container for it).
+// The container sees that UserService needs NotificationService,
+// creates NotificationService first, then creates UserService with it.
+var userService = app.Services.GetRequiredService<UserService>();
+
+// Run the operation. It calls NotificationService inside.
+userService.RegisterUser();
+
+// Start the web server
 app.Run();
