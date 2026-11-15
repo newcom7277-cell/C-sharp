@@ -1,25 +1,50 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// BIND: go to the "PingSettings" section and fill a PingSettings object.
-// "?? new PingSettings()" means: if the section is missing (null), use an empty box instead of crashing.
-var pingSettings = builder.Configuration
-    .GetSection("PingSettings")
-    .Get<PingSettings>() ?? new PingSettings();
+// BIND the whole "PaymentSettings" section into a PaymentSettings object.
+// "?? new PaymentSettings()" = if the section is missing, use an empty box instead of crashing.
+var paymentSettings = builder.Configuration
+    .GetSection("PaymentSettings")
+    .Get<PaymentSettings>() ?? new PaymentSettings();
 
-// REGISTER the filled box in DI as a Singleton (one shared object for the whole app).
-// We pass the ready object, so the container hands out exactly this one.
-builder.Services.AddSingleton(pingSettings);
+// REGISTER the filled box (one shared object for the whole app)
+builder.Services.AddSingleton(paymentSettings);
 
-// REGISTER PingService so the container can create it.
-builder.Services.AddSingleton<PingService>();
+// REGISTER the service that uses it
+builder.Services.AddSingleton<PaymentService>();
 
 var app = builder.Build();
 
-// ASK the container for PingService.
-// It sees PingService needs PingSettings and ILogger, supplies both, and builds it.
-var pingService = app.Services.GetRequiredService<PingService>();
+// ASK the container for PaymentService (it supplies the settings box)
+var paymentService = app.Services.GetRequiredService<PaymentService>();
 
-// Log the interval at startup
-pingService.LogInterval();
+// Test with an amount of 1000
+paymentService.CalculateFinalAmount(1000);
 
 app.Run();
+/*
+
+Question 7: Payment Configuration System
+Objective: Work with multiple configuration properties in a service.
+Requirements
+• Create a project named PaymentSystem.
+• Create PaymentSettings with Currency, TaxPercentage, EnablePayment and MinimumPaymentAmount properties.
+• Store the settings in appsettings.json and bind them to PaymentSettings.
+• Create PaymentService and inject PaymentSettings.
+• Implement CalculateFinalAmount() to calculate tax and the final amount.
+• If payments are disabled, display an appropriate message.
+• Test different tax percentages and payment settings.
+Learning hints
+1. Use decimal for monetary values and tax calculations.
+2. Bind the complete JSON section to PaymentSettings.
+3. Inject the settings into PaymentService through its constructor.
+4. Calculate tax as Amount × TaxPercentage / 100.
+5. Add a condition to check EnablePayment before processing.
+6. Test with different amounts, tax percentages and enabled/disabled values.
+Expected output / observation
+Currency: INR
+Original Amount: 1000
+Tax Percentage: 18%
+Tax Amount: 180
+Final Amount: 1180
+Payment Enabled: True
+*/

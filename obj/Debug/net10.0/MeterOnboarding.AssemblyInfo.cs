@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MeterOnboarding")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+beb4fd739911ff6ebb09c540e7380650cad591a1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5ac553e5c5d9329d37b19a6e1ae2fbeda667083f")]
 [assembly: System.Reflection.AssemblyProductAttribute("MeterOnboarding")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MeterOnboarding")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
